@@ -21,7 +21,7 @@ League of Legends (LoL) is a massively popular multi-player online game with ~11
 #### Winrate:
 **wr** - How often a character choice results in a victory when picked. 
 
-## Reproduction
+## Webscraping with Selenium
 ```
 # Required Packages
 import os 
@@ -41,3 +41,9 @@ from selenium.webdriver.chrome.options import Options #Allows you to change aspe
 chrome_options = Options() 
 chrome_options.add_argument("--window-size=1900,1000")
 ```
+
+LoLalytics has multiple pages of data I need. Each of the pages all follow the same format, which makes using a For loop simple for data collection. This For loop is nested within another For loop which cycles through each of the different ranks. It does this by physically clicking on the page by using the .click() function. Each page takes time to load so I include code to scroll down the page to allow every element to fully load in. If this step was not included, then the code would be unable to search for later elements at the bottom of the page. I use slepe commands to give each element time to load as well.
+
+.click() -> https://www.selenium.dev/documentation/webdriver/elements/interactions/
+
+scrolling -> https://stackoverflow.com/questions/12293158/page-scroll-up-or-down-in-selenium-webdriver-selenium-2-using-java
