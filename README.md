@@ -1,1 +1,1 @@
-# Dominant-Strategies-Effect-Across-Tiers-of-Play
+# How Character Strategies Affects Winrates Across Ranks in League of Legends
