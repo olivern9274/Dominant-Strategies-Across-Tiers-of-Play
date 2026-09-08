@@ -8,3 +8,15 @@ League of Legends (LoL) is a massively popular multi-player online game with ~11
 
 ## Data
 ### Source: 
+[LoLalytics](https://lolalytics.com/lol/tierlist/); collects live match data from League of Legend's Server and compiles it into it into an interactable database. 
+
+### Sample Size:
+1,702 observations across 10 ranks + 1 aggregated rank.
+
+### Key Variables
+#### Pick Ban Influence Index:
+**PBI.Index** - A measure of character competitiveness using a ratio of pick rate to ban rate multiplied by the difference in winrate in a rank and the average winrate across ranks. 
+**PBI.no** - The PBI index measurement with winrate removed from the calculation. 
+
+#### Winrate:
+**wr** - How often a character choice results in a victory when picked. 
