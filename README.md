@@ -13,10 +13,31 @@ League of Legends (LoL) is a massively popular multi-player online game with ~11
 ### Sample Size:
 1,702 observations across 10 ranks + 1 aggregated rank.
 
-### Key Variables
+### Key Variables:
 #### Pick Ban Influence Index:
 **PBI.Index** - A measure of character competitiveness using a ratio of pick rate to ban rate multiplied by the difference in winrate in a rank and the average winrate across ranks. 
 **PBI.no** - The PBI index measurement with winrate removed from the calculation. 
 
 #### Winrate:
 **wr** - How often a character choice results in a victory when picked. 
+
+## Reproduction
+```
+# Required Packages
+import os 
+import pandas as pd
+import numpy as np
+import time
+from time import sleep
+import selenium 
+from selenium import webdriver
+
+from selenium.webdriver.common.by import By #Allows for selenium to click things 
+from selenium.webdriver.chrome.service import Service #https://stackoverflow.com/questions/64717302/deprecationwarning-executable-path-has-been-deprecated-selenium-python
+from selenium.webdriver.support import expected_conditions as EC #Allows for more complex code 
+from selenium.webdriver.chrome.options import Options #Allows you to change aspects of the browser
+
+# Establish options we can change
+chrome_options = Options() 
+chrome_options.add_argument("--window-size=1900,1000")
+```
