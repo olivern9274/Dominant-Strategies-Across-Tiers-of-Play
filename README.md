@@ -21,7 +21,8 @@ League of Legends (LoL) is a massively popular multi-player online game with ~11
 #### Winrate:
 **wr** - How often a character choice results in a victory when picked. 
 
-## Webscraping with Selenium
+## Webscraping with Selenium 
+The project file "Parts 1-3" includes more detail for how each part of the data was gathered.
 ```
 # Required Packages
 import os 
@@ -42,8 +43,78 @@ chrome_options = Options()
 chrome_options.add_argument("--window-size=1900,1000")
 ```
 
-LoLalytics has multiple pages of data I need. Each of the pages all follow the same format, which makes using a For loop simple for data collection. This For loop is nested within another For loop which cycles through each of the different ranks. It does this by physically clicking on the page by using the .click() function. Each page takes time to load so I include code to scroll down the page to allow every element to fully load in. If this step was not included, then the code would be unable to search for later elements at the bottom of the page. I use slepe commands to give each element time to load as well.
+LoLalytics has multiple pages of data I need. Each of the pages all follow the same format, which makes using a For loop simple for data collection. This For loop is nested within another For loop which cycles through each of the different ranks. It does this by physically clicking on the page by using the .click() function. Each page takes time to load so I include code to scroll down the page to allow every element to fully load in. If this step was not included, then the code would be unable to search for later elements at the bottom of the page. I use explicit wait commands to allow each element to load in. 
 
-.click() -> https://www.selenium.dev/documentation/webdriver/elements/interactions/
+```
+driver = webdriver.Chrome(options = chrome_options) # establish driver
 
-scrolling -> https://stackoverflow.com/questions/12293158/page-scroll-up-or-down-in-selenium-webdriver-selenium-2-using-java
+url = 'https://lolalytics.com/lol/tierlist/' # dataset for each champions
+driver.get(url) # Get the url
+
+ranknum=[3, 4, 6, 8, 11, 13, 15, 17, 18, 19] # the element for each rank selection
+
+import time            # importing time package
+start=time.time()      # start time
+
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+wait = WebDriverWait(driver, 20) # explicit wait object, 20s timeout
+
+out2 = [] # empty list to convert into dataframe later
+
+for r in ranknum:
+    out = [] # empty list for data
+    count = 3 # starts at 3 to skip the first 2 which are irrelevant elements
+    wait.until(EC.element_to_be_clickable((By.XPATH,'/html/body/main/div[1]/div/div/div[3]/div/div/div[1]/img'))).click() # clicks the rank sort
+    wait.until(EC.element_to_be_clickable((By.XPATH,f'/html/body/main/div[1]/div/div/div[3]/div[2]/a[{r}]/div'))).click() # clicks the rank
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") # scrolls to the very bottom of the page to load everything (takes ~20 seconds)
+    wait.until(lambda d: len(d.find_elements(By.XPATH, '/html/body/main/div[6]/div')) > 2) # want to wait until things load
+    driver.execute_script("window.scrollBy(0, -6000);") # scrolls back up to load everything
+    for i in range(0,18): # scrolls downs for the next 18 seconds to make sure everything loads
+        driver.execute_script("window.scrollBy(0, 320);")
+        wait.until(EC.presence_of_element_located((By.XPATH, f'/html/body/main/div[6]/div[{3+i}]')))
+    driver.execute_script("window.scrollTo(0,0);") # scrolls back to the top of the page to also open up the rank selection menu for once the loop resets
+    
+    buckets = driver.find_elements(By.XPATH, '/html/body/main/div[6]/div') # creating a bucket of each champion
+    del buckets[:2] # removes the first 2 from the list to skip the first 2 which are just the title rows
+    
+    rank = driver.find_elements(By.XPATH, '/html/body/main/div[1]/div/div/div[3]/div/div/div[2]')[0].text # grabs the rank
+
+    temp1=driver.find_elements(By.XPATH, f'/html/body/main/div[1]/div/div/div[10]/div')[0].text # collects the average win rate for that rank
+    rankwr=float(temp1.split('%')[0].split("Rate: ")[1]) # collects the average win rate for that rank
+
+    for bucket in buckets: # runs the below code for every champion in the list
+        champion = driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[3]/a')[0].text # grabs champion name
+        wr = driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[6]/div/span')[0].text # grabs win rate
+    
+        temp2= driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[6]/div/span')
+        wrdelta= temp2[1].text if len(temp2) > 1 else 0 # checks to see if there is an entry for wrdelta (some are missing on the website)
+
+        pick = driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[7]')[0].text # grabs pick rate
+        ban = driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[8]')[0].text # grabs ban rate
+        PBI = driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[9]')[0].text # grabs PBI
+        lane = driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[5]/div/img')[0].get_attribute('alt') # grabs lane
+        games = driver.find_elements(By.XPATH, f'/html/body/main/div[6]/div[{count}]/div[10]')[0].text # grabs the number of games
+
+        data = {
+            'Champion':champion,
+            'wr':wr,
+            'wrdelta':wrdelta,
+            'rankwr':rankwr,
+            'Pick Rate':pick,
+            'Ban Rate':ban,
+            'PBI Index':PBI,
+            'lane':lane,
+            'games':games,
+            'rank':rank
+        }
+        out.append(data) # adds champion data to a list that will be added at the end of this for loop
+        count+=1
+    out2.append(out) # EACH OF THE RANKS'S DATA IS ADDED TO A FINAL LIST THAT CAN BE SLICED TO GRAB EACH SET
+    ## EDIT: STILL KEEPING THIS FUNCTION, BUT PUTTING EVERYTHING INTO ONE DATASET INSTEAD OF TEN. STILL KEEPING JUST IN CASE !!!
+
+end=time.time()        # end time
+
+total_time=end-start   # measures total time by subtracting start by end
+print(f' The code takes {round(total_time,5)} seconds to run.')
+```
