@@ -1,0 +1,88 @@
+```{r}
+#install.packages("magrittr") 
+#install.packages("estimatr")
+#install.packages("stargazer")
+#install.packages("dplyr")
+#install.packages("lmtest")
+#install.packages("sandwich")
+#install.packages("forestplot")
+library(magrittr)
+library(estimatr)
+library(stargazer)
+library(dplyr)
+library(lmtest)
+library(sandwich)
+library(forestplot)
+
+setwd=("C:/Users/ong92/Documents/GitHub/ECO 590/assignment-three-update-sampText")
+
+```
+
+## #1 Importing My Data
+```{r}
+league=read.csv("C:/Users/ong92/Documents/GitHub/ECO 590/assignment-three-update-sampText/league.csv")
+league$games=gsub(",", "", league$games)
+league$games=as.numeric(league$games)
+# turns into a number so it can be used as control.
+
+#challe=league[league$rank=="CHALLENGER",]
+```
+
+## #2 Basic Regression
+```{r}
+ols1=lm(wr~PBIno+games,data=league)
+summary(ols1)
+```
+
+## #3 Filtered Regression
+```{r}
+ols2=lm(wr~rank*PBIno+games,data=league %>% filter(!(grepl("top lane", lane))))
+summary(ols2)
+```
+
+## #4 Preferred Regression
+```{r}
+ols3=lm(wr~rank*PBIno+games,data=league)
+summary(ols3)
+```
+
+## #5 Reporting Results
+```{r}
+bptest(ols1)
+bptest(ols2)
+bptest(ols3)
+#fails the test, heteroscedasticity is present
+
+rob_se=list(
+  sqrt(diag(vcovHC(ols1,type="HC1"))),
+  sqrt(diag(vcovHC(ols2,type="HC1"))),
+  sqrt(diag(vcovHC(ols3,type="HC1")))
+  )
+#Ahmad helped me with this to calculate robust standard errors
+
+stargazer(ols1, ols3, ols2,
+          se=rob_se,
+          type = "text",  
+          title = "The Effect of PBI on Win Rate Across Ranks", 
+          dep.var.labels = "Win Rate", 
+          column.labels = c("OLS", "Across Every Lane", "Top Lane Only"),
+          model.names = FALSE,
+          dep.var.caption = "",
+          covariate.labels = c("Challenger WR", "Diamond WR", "Emerald WR", "Grandmaster WR", "Gold WR", "Iron WR", "Master WR", "Platinum WR", "Silver WR", "PBI", "# of Games", "PBI * Challenger", "PBI * Diamond", "PBI * Emerald", "PBI * Grandmaster", "PBI * Gold", "PBI * Iron", "PBI * Master", "PBI * Platinum", "PBI * Silver", "Constant"),
+          add.lines=list(c("Rank Interaction", "No", "Yes", "Yes")),
+          notes= "*Reference Group is Bronze Rank*",
+          out="league.html"
+          )
+```
+
+## #6 Discussion
+
+These regressions show the effect of meta-preferred characters on win rate. My base model (1) simply sees the effect of PBI on win rate without considering rank and controlling for the number of games. These results are only statistically significant at the 10% level. However my most interesting results were from the other two models where I added interaction terms with rank and PBI.
+
+What my second model shows is that the strongest effect of PBI on winrate shows itself in the Diamond rank which falls above the average skill, but is not quite what are considered the "apex ranks." The effect tapers off as ranks go past Diamond with a slight pick up at the highest rank, Challenger. Diamond players are often considered to be the most "sweaty." As in, they care a lot about winning, even moreso than higher ranks because they feel like they have something to prove. Therefore they may care more about strong character choice so they can progress as opposed to someone who has already proven themselves. 
+
+The highest ranking players generally have more mechanical skill as well as stronger fundamentals, so they may not need to rely on strong character picks as much. This changes at the Challenger rank because it is the most exclusive rank (only including the top 300 players in the leaderboard). So these players are more compelled to use the strongest characters to maintain their standing.
+
+Ranks below Diamond have progressively weaker effects of PBI, until Bronze and Iron where it actually begins to have a negative effect. So picking "strong" picks can actually be detrimental in the lowest ranks. These are players who have no idea what makes a character strong. They may only be using them because they are "strong", but may also be sabotaging themselves by using something too complex for their skill level.
+
+However as we look at the filtered regression that only looks at the top lane, these dynamics change. Rather than the effect tapering off as ranks increase, we see the strongest effect at Challenger. This may be because, as of now, there are strong character choices in top lane that are almost universally considered to be "broken" (as in, too strong for the current metagame). As ranks go up, top lane players know how to abuse these "broken" picks that would have a very high PBI. This effect is strongest at the Challenger level. Therefore, they would have overall higher win rates with these picks which reflects itself in our coefficients.
