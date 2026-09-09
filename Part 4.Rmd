@@ -14,7 +14,6 @@ library(lmtest)
 library(sandwich)
 library(forestplot)
 
-setwd=("C:/Users/ong92/Documents/GitHub/ECO 590/assignment-three-update-sampText")
 
 ```
 
