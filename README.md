@@ -137,6 +137,6 @@ Selenium's webscraping collects data as strings. Given the fact that I was worki
 
 ### Step 3: Data Visualization
 In this step, I used Seaborn's graph functionality to create vizualisations for my data. 
-![Graphs/Games Across Ranks.png](https://github.com/olivern9274/Dominant-Strategies-Across-Tiers-of-Play/blob/main/Graphs/Games%20Across%20Ranks.png)
+<img src="https://github.com/olivern9274/Dominant-Strategies-Across-Tiers-of-Play/blob/main/Graphs/Games%20Across%20Ranks.png" width="300">
 
 ### Step 4: 
