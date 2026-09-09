@@ -15,12 +15,12 @@ League of Legends (LoL) is a massively popular multi-player online game with ~11
 
 ### Key Variables:
 #### Pick Ban Influence Index:
-**PBI.Index** - A measure of character competitiveness using a ratio of pick rate to ban rate multiplied by the difference in winrate in a rank and the average winrate across ranks. 
+*PBI.Index* - A measure of character competitiveness using a ratio of pick rate to ban rate multiplied by the difference in winrate in a rank and the average winrate across ranks. 
 
-**PBI.no** - The PBI index measurement with winrate removed from the calculation. 
+*PBI.no* - The PBI index measurement with winrate removed from the calculation. 
 
 #### Winrate:
-**wr** - How often a character choice results in a victory when picked. 
+*wr* - How often a character choice results in a victory when picked. 
 
 ## Webscraping with Selenium 
 The project file "Parts 1-3" includes more detail for how each part of the data was gathered.
