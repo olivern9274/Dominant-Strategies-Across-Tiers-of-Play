@@ -44,7 +44,7 @@ chrome_options = Options()
 chrome_options.add_argument("--window-size=1900,1000")
 ```
 
-LoLalytics has multiple pages of data I need. Each of the pages all follow the same format, which makes using a For loop simple for data collection. This For loop is nested within another For loop which cycles through each of the different ranks. It does this by physically clicking on the page by using the .click() function. Each page takes time to load so I include code to scroll down the page to allow every element to fully load in. If this step was not included, then the code would be unable to search for later elements at the bottom of the page. I use explicit wait commands to allow each element to load in. 
+LoLalytics has multiple pages of data I need. Each of the pages all follow the same format, which makes using a For loop simple for data collection. This For loop is nested within another For loop which cycles through each of the different ranks. It does this by physically clicking on the page by using the .click() function. Each page takes time to load so I include code to scroll down the page to allow every element to fully load in. If this step was not included, then the code would be unable to search for later elements at the bottom of the page. I use explicit wait commands to allow each element to load in. Then using for loops, I am able to scrape the data I need from each row of data. 
 
 ```
 driver = webdriver.Chrome(options = chrome_options) # establish driver
@@ -119,3 +119,24 @@ end=time.time()        # end time
 total_time=end-start   # measures total time by subtracting start by end
 print(f' The code takes {round(total_time,5)} seconds to run.')
 ```
+
+## Methodology
+### Step 1: Dataset Construction
+Using pandas, I created a dataframe for each rank's data on each character. These dataframe were added to a list which was initially a part of an effort to create 10 different datasets, but has since been made redundant by the next step. Using concat functions, I merged each of the dataframes within the list into one large dataframe.
+```
+league=pd.DataFrame() # making an empty dataframe
+c=0 # counter
+for rank in out2:
+    temp = pd.DataFrame(out2[c]) # slicing to turn each entry into a new dataframe to concat later
+    league = pd.concat([league, temp], ignore_index=True)
+    c+=1
+```
+
+### Step 2: Dataset Clean-up
+Selenium's webscraping collects data as strings. Given the fact that I was working with numerical values, I needed to convert each value into a float so it would be usable in regression analysis. Additionally, it was at this step that I created my variable of interest PBI.no to remove bias introduced by the winrate differential being included in the initial PBI calculation. Finally, I performed a series of sanity checks to ensure that my dataset was properly imported. The dataset passed the sanity checks, so I was able to convert it into a CSV and save it.
+
+### Step 3: Data Visualization
+In this step, I used Seaborn's graph functionality to create vizualisations for my data. 
+
+
+### Step 4: 
