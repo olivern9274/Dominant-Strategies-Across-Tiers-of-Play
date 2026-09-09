@@ -136,8 +136,19 @@ for rank in out2:
 Selenium's webscraping collects data as strings. Given the fact that I was working with numerical values, I needed to convert each value into a float so it would be usable in regression analysis. Additionally, it was at this step that I created my variable of interest PBI.no to remove bias introduced by the winrate differential being included in the initial PBI calculation. Finally, I performed a series of sanity checks to ensure that my dataset was properly imported. The dataset passed the sanity checks, so I was able to convert it into a CSV and save it.
 
 ### Step 3: Data Visualization
-In this step, I used Seaborn's graph functionality to create vizualisations for my data. 
+In this step, I used Seaborn's graph functionality to create visualizations for my data. These graphs both serve to verify the validity of the research while also confirming/affirming qualities of the game. 
 
 <img src="https://github.com/olivern9274/Dominant-Strategies-Across-Tiers-of-Play/blob/main/Graphs/Games%20Across%20Ranks.png" width="800">
+The vast majority of games are played in the lower ranks. Master to Challenger are considered the "apex" ranks and are the most difficult to achieve due to the exclusivity. Diamond is considered the "gate" before you can enter the apex ranks and this is reflected in the graph as the number of games played takes a steep decline.
+
+<img src="https://github.com/olivern9274/Dominant-Strategies-Across-Tiers-of-Play/blob/main/Graphs/Lane%20Win%20Rates.png" width="800">
+The median win rate for every lane hovers around 50% which tracks given how League does not want to have a higher win rate for one particular role over the other. However bottom lane has the highest range of win rates across every rank. Overall community sentiment over the bottom lane is that it has the highest volatility out of the five roles, so this graph tracks with that concensus.
+
+<img src="https://github.com/olivern9274/Dominant-Strategies-Across-Tiers-of-Play/blob/main/Graphs/PBIvsWR.png" wifth="800">
+There is a clear positive trend between PBI and win rate which makes sense. A character is more favored in the meta when they achieve higher win rates, so naturally they should be highly correlated. The important finding is in how this changes across ranks. Visually, it is difficult to see and make judgements on. However once we run our regression analysis, this relationship will become more clear. 
+
+The bowtie shape of the graph was strange, but it did not interfere with the obtained results. This shape is still present in the PBI calculation with win rate included, so it is not a result of any data transformations. Rather, it is a function of the data where there is a high clustering of characters around 0 PBI as a result of of many "neutral characters" that have a winrate close to the average winrate of that rank.
+
+
 
 ### Step 4: 
